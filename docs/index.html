@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="SHORTCUT ICON" href="https://c.s-microsoft.com/favicon.ico?v2" type="image/x-icon">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ"
+        crossorigin="anonymous">
 </head>
 
 
@@ -16,12 +18,12 @@
     <div class="container">
         <header>
             <a class="logo-link" href="https://microsoft.com" title="Microsoft Website">
-              <figure class="logo-css">
-                <span class="logo-tile logo-tile--red"></span>
-                <span class="logo-tile logo-tile--green"></span>
-                <span class="logo-tile logo-tile--blue"></span>
-                <span class="logo-tile logo-tile--yellow"></span>
-              </figure>
+                <figure class="logo-css">
+                    <span class="logo-tile logo-tile--red"></span>
+                    <span class="logo-tile logo-tile--green"></span>
+                    <span class="logo-tile logo-tile--blue"></span>
+                    <span class="logo-tile logo-tile--yellow"></span>
+                </figure>
             </a>
             <h1>Microsoft is looking for designers who code to help create the most compelling developer tools &amp; services
                 on the planet.
@@ -42,6 +44,12 @@
             <p>Interested? Send a PR with any improvement to
                 <a href="https://github.com/Microsoft/join-dev-design" title="GitHub repository join-dev-design by the Microsoft organization">microsoft/join-dev-design</a> or
                 <a href="mailto:dasiege@microsoft.com" title="Email address for dasiege@microsoft.com">email us</a>.</p>
+
+            <div class="other" id="contribList" style="display: none;">
+                <hr>
+                <h2>Contributors : </h2>
+
+            </div>
         </main>
     </div>
     <footer class="footer" role="footer">
@@ -49,12 +57,21 @@
             <a href="https://code.visualstudio.com" title="Visual Studio Code is a code editor redefined and optimized for building and debugging modern web and cloud applications.">Code</a>.</span>
         <span class="footer-piece">
             Created by
-            <span id="contributors">10</span> contributors on
+            <span id="contributors">10</span>
+            <a href="#" id="showContrib"> (show) </a> contributors on
             <a href="https://github.com/Microsoft/join-dev-design" title="GitHub repository join-dev-design by the Microsoft organization">GitHub</a>.</span>
     </footer>
+
 </body>
 <script type="text/javascript">
     console.log("%c\t\t\t\t\t\t\t\t\t\t\t\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n👋 Hi there! 👋\n\nIt seems you like to poke around as much as we do.\n\nhttps://github.com/Microsoft/join-dev-design", "color: white; background-color: #080808; background-image: url(https://microsoft.github.io/join-dev-design/msft-square.svg); background-size: 70%; background-position: 50% 25%; background-repeat: no-repeat; padding: 3em; text-align: center;font-size: 1.25em;");
+    var contribList;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        contribList = document.getElementById("contribList");
+    }, false);
+
+
 
     fetch("https://api.github.com/repos/Microsoft/join-dev-design/stats/contributors")
         .then(function (response) {
@@ -67,10 +84,67 @@
             response.json().then(function (data) {
                 var contributors = document.getElementById("contributors");
                 contributors.innerText = data.length;
+                if (data.length > 0) {
+                    data.forEach(element => {
+                        console.log(element.author.login);
+                        var itemContrib = document.createElement("div");
+                        itemContrib.className = "item-contrib";
+                        var imgContainer = document.createElement("div");
+                        var clearer = document.createElement("div");
+                        var imgTag = document.createElement("img");
+
+                        var ulContrib = document.createElement("ul");
+
+                        var liContribLogin = document.createElement("li");
+                        var loginText = document.createTextNode(element.author.login);
+                        var iconLogin = document.createElement("i");
+
+                        var liContribGitHub = document.createElement("li");
+                        var iconGitHub = document.createElement("i");
+                        iconGitHub.classList.add("fab", "fa-github");
+                        var linkGitHub = document.createElement("a");
+                        linkGitHub.setAttribute("href", element.author.html_url);
+                        var gitLinkText = document.createTextNode(element.author.html_url);
+                        linkGitHub.appendChild(gitLinkText);
+                        liContribGitHub.appendChild(iconGitHub);
+                        liContribGitHub.appendChild(linkGitHub);
+
+
+                        iconLogin.classList.add("fab", "fa-github-alt");
+
+                        imgContainer.className = "img-container";
+                        clearer.className = "clearer"
+                        imgTag.src = element.author.avatar_url;
+                        liContribLogin.appendChild(iconLogin);
+                        liContribLogin.appendChild(loginText);
+
+                        imgContainer.appendChild(imgTag);
+                        itemContrib.appendChild(imgContainer);
+                        ulContrib.appendChild(liContribLogin);
+                        ulContrib.appendChild(liContribGitHub);
+                        itemContrib.appendChild(ulContrib);
+                        itemContrib.appendChild(clearer);
+                        contribList.appendChild(itemContrib);
+                    });
+                }
             });
         })
         .catch(function (err) {
             console.log("Fetch Error :-S", err);
         });
+
+    document.getElementById("showContrib").addEventListener('click', function (e) {
+        e.preventDefault();
+        showContrib();
+    });
+
+    function showContrib() {
+        if (contribList.style.display === "none") {
+            contribList.style.display = "block";
+        } else {
+            contribList.style.display = "none";
+        }
+    }
 </script>
+
 </html>
