@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="SHORTCUT ICON" href="https://c.s-microsoft.com/favicon.ico?v2" type="image/x-icon">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ"
-        crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.14/webcomponents-hi.js"></script>
+    <link rel="stylesheet" href="css/all.css">
 </head>
 
 
@@ -58,9 +58,35 @@
         <span class="footer-piece">
             Created by
             <span id="contributors">10</span>
+            <i class="fab fa-github"></i>
             <a href="#" id="showContrib"> (show) </a> contributors on
             <a href="https://github.com/Microsoft/join-dev-design" title="GitHub repository join-dev-design by the Microsoft organization">GitHub</a>.</span>
     </footer>
+
+    <template id="item-contrib-template">
+        <style>
+            @import url('css/itemContrib.css');
+            @import url('css/style.css');
+            @import url('css/all.css');
+        </style>
+        <div class="item-contrib">
+            <div class="img-container">
+                <img id="avatar" src="https://avatars1.githubusercontent.com/u/2761516?v=4">
+            </div>
+            <ul>
+                <li>
+                    <i class="fab fa-github-alt"></i>
+                    <span id="userid">amitse</span>
+                </li>
+                <li>
+                    <i class="fab fa-github"></i>
+                    <a id="githubid" href="https://github.com/amitse">https://github.com/amitse</a>
+                </li>
+            </ul>
+            <div class="clearer"></div>
+        </div>
+    </template>
+    <script src="js/ItemContrib.js"></script>
 
 </body>
 <script type="text/javascript">
@@ -85,46 +111,12 @@
                 var contributors = document.getElementById("contributors");
                 contributors.innerText = data.length;
                 if (data.length > 0) {
-                    data.forEach(element => {
+                    data.sort(function (obj1, obj2) {
+                        // Ascending: first age less than the previous
+                        return obj2.total - obj1.total;
+                    }).forEach(element => {
                         console.log(element.author.login);
-                        var itemContrib = document.createElement("div");
-                        itemContrib.className = "item-contrib";
-                        var imgContainer = document.createElement("div");
-                        var clearer = document.createElement("div");
-                        var imgTag = document.createElement("img");
-
-                        var ulContrib = document.createElement("ul");
-
-                        var liContribLogin = document.createElement("li");
-                        var loginText = document.createTextNode(element.author.login);
-                        var iconLogin = document.createElement("i");
-
-                        var liContribGitHub = document.createElement("li");
-                        var iconGitHub = document.createElement("i");
-                        iconGitHub.classList.add("fab", "fa-github");
-                        var linkGitHub = document.createElement("a");
-                        linkGitHub.setAttribute("href", element.author.html_url);
-                        var gitLinkText = document.createTextNode(element.author.html_url);
-                        linkGitHub.appendChild(gitLinkText);
-                        liContribGitHub.appendChild(iconGitHub);
-                        liContribGitHub.appendChild(linkGitHub);
-
-
-                        iconLogin.classList.add("fab", "fa-github-alt");
-
-                        imgContainer.className = "img-container";
-                        clearer.className = "clearer"
-                        imgTag.src = element.author.avatar_url;
-                        liContribLogin.appendChild(iconLogin);
-                        liContribLogin.appendChild(loginText);
-
-                        imgContainer.appendChild(imgTag);
-                        itemContrib.appendChild(imgContainer);
-                        ulContrib.appendChild(liContribLogin);
-                        ulContrib.appendChild(liContribGitHub);
-                        itemContrib.appendChild(ulContrib);
-                        itemContrib.appendChild(clearer);
-                        contribList.appendChild(itemContrib);
+                        contribList.insertAdjacentHTML('beforeend', '<item-contrib userid="' + element.author.login + '" githuburl="' + element.author.html_url + '" avatar="' + element.author.avatar_url + '"></item-contrib>');
                     });
                 }
             });
@@ -135,13 +127,15 @@
 
     document.getElementById("showContrib").addEventListener('click', function (e) {
         e.preventDefault();
-        showContrib();
+        showContrib(e.target);
     });
 
-    function showContrib() {
+    function showContrib(target) {
         if (contribList.style.display === "none") {
+            target.inerText = ' (hide) ';
             contribList.style.display = "block";
         } else {
+            target.inerText = ' (show) ';
             contribList.style.display = "none";
         }
     }
